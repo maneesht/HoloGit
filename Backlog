@@ -1,0 +1,60 @@
+HoloGit Backlog
+
+Problem Statement:
+Many new developers have never used git or a similar type of version control, though it is a requirement for almost all jobs in this field. HoloGit aims to make learning git easier through the use of augmented reality (HoloLens) and clear informative visualizations, to help developers new to git have a better understanding of what each command does and how it affects the overall structure of the project.
+Background Information:
+Sometimes git repositories can contain a lot of complex information [directories, subdirectories, READMEs, branches] that is difficult to make sense out of. Our system will make it easier for students to learn/visualize and instructors to teach git. 
+
+The target users would be entry-level software developers, students wanting to learn git, and teachers that would like to teach git. 
+The platform would be for HoloLens, but eventually could be ported to other systems.
+
+Similar systems
+Systems exist that visualize git repositories such as SourceTree, however, they don’t show how different operations work. In addition, the visual representation is very minimal and doesn’t fully represent what the state of the repository is like. Our system would animate different git operations in a 3-dimensional space which would allow the user to fully understand how operations affect the repository. 
+Functional Requirements:
+As a user, I would like to be able to load any git repository into the visualization.
+As a user, I would like to be able to view a branch.
+As a user, I would like to be able to view a commit.
+As a user, I would like to be able to view a merge.
+As a user, I would like to be able to view a push.
+As a user, I would like to be able to view a pull.
+As a user, I would like to be able to view a fetch.
+As a user, I would like to be able to differentiate branches from one another. 
+As a user, I would like to be able to view a list of available branches.
+As a user I would like to be able to check out branches.
+As a user, I would like to see any changes being made happen in real time on my visualizations.
+As a user, I would like to be able to use voice commands to view a git fetch.
+As a user, I would like to be able to use voice commands to view a git pull.
+As a user, I would like to be able to use voice commands to view a git push.
+As a user, I would like to be able to use voice commands to view a git merge.
+As a user, I would like to be able to use voice commands to view a commit.
+As a user, I would like to be able to use gestures to select a commit.
+As a user, I would like to be able to use gestures to perform a git pull.
+As a user, I would like to be able to use gestures to perform a git push.
+As a user, I would like to be able to use gestures to perform a git merge.
+As a user, I would like to be able to visualize diffs between files.
+As a user, I would like to be able to visualize diffs between commits.
+As a user, I would like to be able to visualize open Pull Requests.
+As a developer, I would like to have a specified JSON format for the git data from the server.
+As a user, I would like to be able to use gestures to zoom in on a repository to view more details about a branch and further to view individual commits.
+As a user, I would like to be able to use gestures to zoom out on a repository to view less details and see the entire project as a whole.
+As a user I would like to be able to easily identify what part of the repository I’m viewing.
+As a user I would like for the UI to be able to tag along.
+As a user I would like for the UI to be set in the world space.
+As a user I would like for the UI to be hand draggable.
+As a user I would like to be able to scale the UI.
+As a user I would like to be able to see specific users commits.
+As a user I would like to be able to visualize squash.
+As a user, I would like to be able to use voice commands to view a squash.
+Non-Functional Requirements:
+Architecture
+Our system will have a separate backend and frontend. The HoloLens will serve as the frontend, showing any information passed from the backend. The backend will be written in Node.js using Express.js with a RESTful API model. The separated backend will allow us to easily incorporate with other platforms if need be.
+
+Response Time/Latency
+
+Due to the nature of our product we need to ensure that all operations are completed relatively quickly. We also need to make sure that the UI is updated smoothly and does not cause users to feel nauseous or other discomfort while using our product. We need the UI to be either in the real world space or having it as a tag along with the user’s head movements with fluid delay, never statically placed in front of the user’s head following head movements with no delay as it has been known to cause nausea and headaches.
+
+Usability
+The application should be easy and intuitive to use for someone who is experienced with Git. For someone unfamiliar with git there should be some sort of dummy repository that’s built into the application and looks different than normal repositories, set up more like a tutorial.
+
+Connectivity
+Be able to connect to github to access data and information about the repository.
