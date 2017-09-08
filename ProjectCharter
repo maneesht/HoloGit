@@ -1,0 +1,28 @@
+Project Charter
+HoloGit
+Team #2
+
+Problem Statement:
+Many computer science students and even some developers are unable to properly visualize Git. There aren't tools to easily visualize and teach how git repositories work. Most tools allow you to see how the branches are arranged, but not in three dimensions, which is more hands-on and isn’t as limited in space. Our educational tool will display any git repository in an augmented reality state. In addition, the application will allow you to use git as you normally would and provide animations to show how your action has affected the repository. 
+
+Project Objectives:
+Develop a meaningful User Interface for any git repository using Augmented Reality (HoloLens)
+Implement voice commands and touch gestures along with the User Interface
+Provide a new way for users inexperienced with git to learn
+
+Stakeholders:
+Users
+Students learning git
+Project Coordinator
+Hasini Gunasinghe
+Development Team
+Andrew Bostock
+Ben Collier
+Matt Kramer
+Eli Scherrer
+Maneesh Tewani
+Hector Trevino
+
+Project Deliverables:
+Hololens application that displays git repository information
+A Node.js backend that sends parsed git information to hololens
