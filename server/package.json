@@ -1,0 +1,26 @@
+{
+  "name": "holo-git",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./node_modules/.bin/ts-node ./src/app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ABostock/HoloGit.git"
+  },
+  "author": "Maneesh Tewani <maneesh.tewani@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ABostock/HoloGit/issues"
+  },
+  "homepage": "https://github.com/ABostock/HoloGit#readme",
+  "dependencies": {
+    "@types/express": "^4.0.37",
+    "express": "^4.15.4",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.5.2"
+  }
+}
