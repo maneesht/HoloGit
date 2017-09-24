@@ -1,0 +1,3 @@
+[submodule "repositories/basicgitrepo"]
+	path = repositories/basicgitrepo
+	url = http://github.com/abostock/basicgitrepo.git
