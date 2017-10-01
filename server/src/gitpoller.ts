@@ -16,7 +16,8 @@ export class GitPoller {
             client_id: GITHUB_CLIENT_ID,
             client_secret: GITHUB_CLIENT_SECRET,
             access_token: ''
-        }
+        },
+        resolveWithFullResponse: true
     };
 
     static addAccessToken(ip: string, accessToken: string) {
@@ -29,7 +30,8 @@ export class GitPoller {
         });
         options.qs.access_token = accessToken;
         let branches: {branchId: string, commits: object, parentBranch: string}[] = [];
-        return request.get(options).then((body:any) => {
+        return request.get(options).then(response => {
+            let body = response.body;
             let promises:Promise<any>[] = [];
             body.forEach((branch: JSON) => {
                 let promise = GitPoller.getCommits(username, repo, branch['name'], ip).then((data: object) => {
@@ -42,12 +44,24 @@ export class GitPoller {
                 promises.push(promise);
             });
             return q.all(promises).then(data => branches);
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
         });
     }
 
     static getBranch(username: string, repo: string, branch: string, ip: string) {
-        return GitPoller.getCommits(username, repo, branch, ip).then(data => {
-            return [{id: branch, commits: data}];
+        let branchInfo: {branchID: {commits: object}} = {branchID: {commits: {}}};
+        return GitPoller.getCommits(username, repo, branch,ip).then(data => {
+            if (data.hasOwnProperty('errorCode')) {
+                throw data;
+            }
+            branchInfo.branchID.commits = data;
+            return branchInfo;
+        }).catch(error => {
+            return error;
         });
     }
 
@@ -58,7 +72,8 @@ export class GitPoller {
         });
         options.qs.access_token = accessToken;
         let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
-        return request.get(options).then(body => {
+        return request.get(options).then(response => {
+            let body = response.body;
             body.forEach((commit: JSON) => {
                 let pSha: string = '';
                 if (commit['parents'].length != 0) {
@@ -72,6 +87,11 @@ export class GitPoller {
                 });
             });
             return commits;
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
         });
     }
 
@@ -82,7 +102,8 @@ export class GitPoller {
             access_token: accessToken
         });
         let commit: {commitId: {branchID: string, author: string, committer: string, parentSha: string}}
-        return request.get(options).then(body => {
+        return request.get(options).then(response => {
+            let body = response.body;
             let pSha: string = '';
             if (body['parents'].length != 0) {
                 pSha = body['parents'][0]['sha'];
@@ -94,6 +115,11 @@ export class GitPoller {
                 parentSha: pSha
             };
             return commit
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
         });
     }
 
@@ -103,7 +129,8 @@ export class GitPoller {
             url: `https://api.github.com/search/repositories?sort=stars&order=desc&q=created:>${date.toISOString().split('T')[0]}`
         });
         let data: {name: string, description: string, language: string, owner: string}[] = [];
-        return request.get(options).then(body => {
+        return request.get(options).then(response => {
+            let body = response.body;
             body['items'].forEach((repo: JSON) => {
                 data.push({
                     name: repo['name'],
@@ -113,6 +140,11 @@ export class GitPoller {
                 });
             });
             return data;
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
         });
     }
 
@@ -121,7 +153,8 @@ export class GitPoller {
             url: `https://api.github.com/users/${username}/repos`
         });
         let data: {name: string, description: string, language: string, owner: string}[] = [];
-        return request.get(options).then(body => {
+        return request.get(options).then(response => {
+            let body = response.body;
             body.forEach((repo: JSON) => {
                 data.push({
                     name: repo['name'],
@@ -131,6 +164,11 @@ export class GitPoller {
                 });
             });
             return data;
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
         });
     }
 }
