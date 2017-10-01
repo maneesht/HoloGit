@@ -1,3 +1,4 @@
+import { GitPoller } from './gitpoller';
 import * as express from 'express';
 import { GraphQLInt, GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, graphql } from 'graphql';
 import * as graphqlHTTP from 'express-graphql';
@@ -24,7 +25,7 @@ let BranchQL = new GraphQLObjectType({
         commits: {
             type: new GraphQLList(CommitQL),
             args: {
-                sha: { type: GraphQLInt! }
+                sha: { type: GraphQLString }
             },
             resolve: (_, {sha}) => {
                 if(!sha) {
@@ -35,8 +36,8 @@ let BranchQL = new GraphQLObjectType({
         }
     }
 })
-function getBranch(sha:number) {
-    return repo.branches.filter(branch => branch.branchId === sha);
+function getBranch(branchName:string) {
+    return GitPoller.getBranch('maneesht', 'quiz-app', branchName);
 }
 let BranchesQL = new GraphQLObjectType({
     name: 'Branches',
@@ -44,49 +45,14 @@ let BranchesQL = new GraphQLObjectType({
         
     }
 })
-let repo = {
-    branches: [
-        {
-            branchId: 1,
-            commits: [
-                {
-                    sha: 3433434234,
-                    author: "Maneesh",
-                    message: "Create stuff",
-                    parentSha: 3444344
-                },
-                {
-                    sha: 3444344,
-                    author: "Drew",
-                    message: "Create stuff 2",
-                    parentSha: 343432232
-                },
-                {
-                    sha: 343432232,
-                    author: "Ben",
-                    message: "Create stuff 3"
-                }
-            ]
-        }
-    ]
-};
 let server: Server = new Server();
 const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: {
-        branch: {
-            type: BranchQL,
-            args: {
-                id: { type: GraphQLInt }
-            },
-            resolve: function(_, {id}) {
-                return repo.branches[id];
-            }
-        },
         branches: {
             type: new GraphQLList(BranchQL),
-            args: { id: { type: GraphQLInt }},
-            resolve: (_, {id}) => id ? getBranch(id) : repo.branches
+            args: { id: { type: GraphQLString }},
+            resolve: (_, {id}) => id ? getBranch(id) : GitPoller.getRepo('maneesht', 'quiz-app')
         },
     }
 })
