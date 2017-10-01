@@ -21,6 +21,16 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
+"@types/form-data@*":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@types/form-data/-/form-data-2.2.0.tgz#a98aac91dc99857b6af24caef7ca6df302f31565"
+  dependencies:
+    "@types/node" "*"
+
+"@types/graphql@^0.11.4":
+  version "0.11.4"
+  resolved "https://registry.yarnpkg.com/@types/graphql/-/graphql-0.11.4.tgz#6e067838246ec741be3950211323726a77147472"
+
 "@types/mime@*":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.0.tgz#5a7306e367c539b9f6543499de8dd519fac37a8b"
@@ -28,6 +38,23 @@
 "@types/node@*":
   version "8.0.30"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.30.tgz#aa3c42946fc6357737eb215349fe728b38679d05"
+
+"@types/q@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@types/q/-/q-1.0.5.tgz#02b9d43a1a8e7503d15ed2fecb15ebb18c519b1d"
+
+"@types/request-promise-native@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@types/request-promise-native/-/request-promise-native-1.0.7.tgz#46479ab9aa467299095beca8af41e8e2511ec1e0"
+  dependencies:
+    "@types/request" "*"
+
+"@types/request@*":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@types/request/-/request-2.0.3.tgz#bdf0fba9488c822f77e97de3dd8fe357b2fb8c06"
+  dependencies:
+    "@types/form-data" "*"
+    "@types/node" "*"
 
 "@types/serve-static@*":
   version "1.7.32"
