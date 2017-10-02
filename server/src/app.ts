@@ -10,6 +10,10 @@ export class Server {
         this.app = express();
     }
 }
+//TODO add the ability to have the repo field with the arguments repo and username
+//TODO update calls to gitpoller to use the passed in username and repo name
+
+
 let CommitQL = new GraphQLObjectType({
     name: 'Commit',
     fields: {
@@ -27,22 +31,13 @@ let BranchQL = new GraphQLObjectType({
             args: {
                 sha: { type: GraphQLString }
             },
-            resolve: (_, {sha}) => {
-                if(!sha) {
+            resolve: (_, { sha }) => {
+                if (!sha) {
                     return _.commits;
                 }
                 return _.commits.filter((commits: any) => commits.sha === sha);
             }
         }
-    }
-})
-function getBranch(branchName:string) {
-    return GitPoller.getBranch('maneesht', 'quiz-app', branchName);
-}
-let BranchesQL = new GraphQLObjectType({
-    name: 'Branches',
-    fields: {
-        
     }
 })
 let server: Server = new Server();
@@ -51,8 +46,17 @@ const queryType = new GraphQLObjectType({
     fields: {
         branches: {
             type: new GraphQLList(BranchQL),
-            args: { id: { type: GraphQLString }},
-            resolve: (_, {id}) => id ? getBranch(id) : GitPoller.getRepo('maneesht', 'quiz-app')
+            args: {
+                username: { type: GraphQLString },
+                repo: { type: GraphQLString },
+                branchName: { type: GraphQLString },
+            },
+            resolve: (_, { repo, username, branchName }) => {
+                if (branchName) {
+                    return GitPoller.getBranch(username, repo, branchName);
+                }
+                return GitPoller.getRepo(username, repo)
+            }
         },
     }
 })
@@ -67,3 +71,4 @@ app.use('/graphql', graphqlHTTP({
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
 app.use("/", routes);
 
+export { CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList };
