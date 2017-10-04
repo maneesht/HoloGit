@@ -1,5 +1,14 @@
+import { isAbsolute } from 'path';
 import { GitPoller } from './gitpoller';
+import * as passport from 'passport';
 import * as express from 'express';
+import * as morgan from 'morgan';
+import * as cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser';
+import * as expressSession from 'express-session';
+import {Strategy} from 'passport-github2';
+const GITHUB_CLIENT_ID = 'f10bae450fbb2df2d082';
+const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
 import { GraphQLInt, GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, graphql } from 'graphql';
 import * as graphqlHTTP from 'express-graphql';
 import { routes } from './routes';
@@ -8,6 +17,21 @@ export class Server {
     public port = process.env.PORT || 3000;
     constructor() {
         this.app = express();
+        passport.use(new Strategy({
+            clientID: GITHUB_CLIENT_ID,
+            clientSecret: GITHUB_CLIENT_SECRET,
+            callbackURL: "http://localhost:3000/auth/github/callback"
+            },
+            (accessToken, refreshToken, profile, done) => done(null, profile)
+        ));
+        passport.serializeUser((user, cb) => cb(null, user));
+        passport.deserializeUser((user, cb) => cb(null, user));
+        this.app.use(cookieParser());
+        this.app.use(bodyParser.urlencoded( { extended: true }));
+        this.app.use(expressSession({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
+        this.app.use(passport.initialize());
+        this.app.use(passport.session());
+        this.app.use(morgan('combined'));
     }
 }
 //TODO add the ability to have the repo field with the arguments repo and username
@@ -55,7 +79,7 @@ const queryType = new GraphQLObjectType({
                 if (branchName) {
                     return GitPoller.getBranch(username, repo, branchName);
                 }
-                return GitPoller.getRepo(username, repo)
+                return GitPoller.getRepo(username, repo);
             }
         },
     }
@@ -64,11 +88,24 @@ const schema = new GraphQLSchema({
     query: queryType
 });
 let app: express.Application = server.app;
+app.use(isAuthenticated);
+function isAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
+    if(req.user || req.path !== '/graphql') {
+        return next();
+    }
+    res.redirect('/login');
+}
 app.use('/graphql', graphqlHTTP({
     schema: schema,
     graphiql: true
 }));
+/*app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    graphiql: true
+}));*/
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
+app.get('/login', passport.authenticate('github', { scope: ['user:email']}));
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login'}), (req, res) => res.send('HI!'));
 app.use("/", routes);
 
 export { CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList };
