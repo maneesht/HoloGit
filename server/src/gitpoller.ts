@@ -57,7 +57,6 @@ export class GitPoller {
             url: `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}`
         });
         options.qs.access_token = accessToken;
-        console.log(options);
         let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
         return request.get(options).then(body => {
             body.forEach((commit: JSON) => {
