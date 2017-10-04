@@ -22,16 +22,19 @@ export class Server {
             clientSecret: GITHUB_CLIENT_SECRET,
             callbackURL: "http://localhost:3000/auth/github/callback"
             },
-            (accessToken, refreshToken, profile, done) => done(null, profile)
+            (accessToken, refreshToken, profile, done) => { done(null, Object.assign({}, profile, {
+                accessToken: accessToken
+            }))}
         ));
         passport.serializeUser((user, cb) => cb(null, user));
         passport.deserializeUser((user, cb) => cb(null, user));
+        this.app.use(morgan('combined'));
         this.app.use(cookieParser());
-        this.app.use(bodyParser.urlencoded( { extended: true }));
+        this.app.use('/graphql', bodyParser.urlencoded( { extended: true }));
+        this.app.use('/graphql', bodyParser.json());
         this.app.use(expressSession({secret: 'keyboard cat', resave: true, saveUninitialized: true}));
         this.app.use(passport.initialize());
         this.app.use(passport.session());
-        this.app.use(morgan('combined'));
     }
 }
 //TODO add the ability to have the repo field with the arguments repo and username
@@ -75,11 +78,11 @@ const queryType = new GraphQLObjectType({
                 repo: { type: GraphQLString },
                 branchName: { type: GraphQLString },
             },
-            resolve: (_, { repo, username, branchName }) => {
+            resolve: (_, { repo, username, branchName }, context) => {
                 if (branchName) {
-                    return GitPoller.getBranch(username, repo, branchName);
+                    return GitPoller.getBranch(username, repo, branchName, context.ip);
                 }
-                return GitPoller.getRepo(username, repo);
+                return GitPoller.getRepo(username, repo, context.ip);
             }
         },
     }
@@ -88,7 +91,6 @@ const schema = new GraphQLSchema({
     query: queryType
 });
 let app: express.Application = server.app;
-app.use(isAuthenticated);
 function isAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction) {
     if(req.user || req.path !== '/graphql') {
         return next();
@@ -104,8 +106,11 @@ app.use('/graphql', graphqlHTTP({
     graphiql: true
 }));*/
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
-app.get('/login', passport.authenticate('github', { scope: ['user:email']}));
-app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login'}), (req, res) => res.send('HI!'));
+app.get('/login', passport.authenticate('github', { scope: ['repo']}));
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login'}), (req, res) => {
+    GitPoller.addAccessToken(req.ip, req.user.accessToken);
+    res.send(req.user);
+});
 app.use("/", routes);
 
 export { CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList };
