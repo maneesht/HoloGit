@@ -3,6 +3,7 @@ node_js:
   - "lts/*"
 before_script:
   - npm install -g yarn
+  - npm install -g mocha
   - cd server
   - yarn install
-script: yarn build
+script: yarn test

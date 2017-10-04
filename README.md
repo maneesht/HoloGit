@@ -1,4 +1,4 @@
-# Holo Git
+# Holo Git [![Build Status](https://travis-ci.com/maneesht/HoloGit.svg?token=HusTaf8T8UP2cptpeArK&branch=master)](https://travis-ci.com/maneesht/HoloGit) 
 
 ## Setup
 ### Server
@@ -19,3 +19,6 @@ To Install:
 
 #### Removing dependency
 `yarn remove <package-name>`
+
+### Running tests
+`yarn test`

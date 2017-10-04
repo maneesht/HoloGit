@@ -2,8 +2,21 @@
     "compilerOptions": {
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
+        "sourceMap": true,
         "lib": [
-            "es6"
+            "es5",
+            "dom",
+            "es6",
+            "es2015.core",
+            "es2015.collection",
+            "es2015.generator",
+            "es2015.iterable",
+            "es2015.promise",
+            "es2015.proxy",
+            "es2015.reflect",
+            "es2015.symbol",
+            "es2015.symbol.wellknown",
+            "esnext"
         ],
         "allowSyntheticDefaultImports": true,
         "module": "commonjs",
@@ -12,7 +25,6 @@
         "noUnusedLocals": false,
         "pretty": true,
         "removeComments": false,
-        "sourceMap": false,
         "suppressImplicitAnyIndexErrors": true,
         "target": "es6"
     }
