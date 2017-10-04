@@ -19,3 +19,6 @@ To Install:
 
 #### Removing dependency
 `yarn remove <package-name>`
+
+### Running tests
+`yarn test`
