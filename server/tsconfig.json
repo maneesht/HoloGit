@@ -3,7 +3,8 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "lib": [
-            "es6"
+            "es6",
+        "esnext.asynciterable"
         ],
         "allowSyntheticDefaultImports": true,
         "module": "commonjs",
