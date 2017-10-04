@@ -31,10 +31,8 @@ export class GitPoller {
     }
 
     static getBranch(username: string, repo: string, branch: string) {
-        let branchInfo: {branchID: {commits: object}};
         return GitPoller.getCommits(username, repo, branch).then(data => {
-            branchInfo.branchID.commits = data;
-            return branchInfo;
+            return [{commits: data}];
         });
     }
 

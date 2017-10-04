@@ -31,8 +31,8 @@ let BranchQL = new GraphQLObjectType({
             args: {
                 sha: { type: GraphQLString }
             },
-            resolve: (_, {sha}) => {
-                if(!sha) {
+            resolve: (_, { sha }) => {
+                if (!sha) {
                     return _.commits;
                 }
                 return _.commits.filter((commits: any) => commits.sha === sha);
@@ -53,16 +53,16 @@ const queryType = new GraphQLObjectType({
         branches: {
             type: new GraphQLList(BranchQL),
             args: {
-							username: { type: GraphQLString },
-							repo: { type: GraphQLString },
-							branchName: { type: GraphQLString },
-						},
-            resolve: (_, {repo, username, branchName}) => {
-							if (branchName) {
-								return GitPoller.getBranch(username, repo, branchName);
-							}
-							return GitPoller.getRepo(username, repo)
-						}
+                username: { type: GraphQLString },
+                repo: { type: GraphQLString },
+                branchName: { type: GraphQLString },
+            },
+            resolve: (_, { repo, username, branchName }) => {
+                if (branchName) {
+                    return GitPoller.getBranch(username, repo, branchName);
+                }
+                return GitPoller.getRepo(username, repo)
+            }
         },
     }
 })
@@ -77,4 +77,4 @@ app.use('/graphql', graphqlHTTP({
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
 app.use("/", routes);
 
-export { CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList};
+export { CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList };
