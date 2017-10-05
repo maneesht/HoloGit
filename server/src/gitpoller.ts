@@ -47,7 +47,7 @@ export class GitPoller {
 
     static getBranch(username: string, repo: string, branch: string, ip: string) {
         return GitPoller.getCommits(username, repo, branch, ip).then(data => {
-            return [{commits: data}];
+            return [{id: branch, commits: data}];
         });
     }
 
@@ -58,6 +58,7 @@ export class GitPoller {
         });
         options.qs.access_token = accessToken;
         let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
+        console.log(options);
         return request.get(options).then(body => {
             body.forEach((commit: JSON) => {
                 let pSha: string = '';
