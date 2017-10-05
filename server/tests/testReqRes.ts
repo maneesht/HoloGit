@@ -1,5 +1,5 @@
 export const test1req = `
-	uery {
+	query {
 		branches (username: "maneesht" repo: "todo-app"){
 			id
 		}
