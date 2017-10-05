@@ -3,9 +3,13 @@ import sinon from 'sinon';
 
 import {CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList} from '../src/app';
 import { GitPoller } from '../src/gitpoller';
+import * as request from 'request-promise-native'
+//import {start, stop, graphqlQuery} from './testServer';
+import { test1req, test1res, test2req, test2res } from './testReqRes'
 
 const commitType = CommitQL;
 const branchType = BranchQL;
+
 
 describe('Commit', () => {
 	//test schema fields
@@ -44,4 +48,38 @@ describe('Query', () => {
     expect(queryType.getFields()).to.have.property('branches');
     expect(queryType.getFields().branches.type).to.be.an.instanceOf(GraphQLList);
   });
+});
+
+describe('Graphql integration', () => {
+  let app: any;
+
+	it('Should return two branches of a simple repo', () => {
+		//github.com/maneesht/todo-app
+    const query = test1req;
+
+    const expected = test1res;
+
+		const expectedString = JSON.stringify(expected);
+
+		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+			console.log(response);
+			expect(response).equal(expectedString);
+		});
+  });
+
+	it('Should return two branches and their commits\' shas of a simple repo', () => {
+		//github.com/maneesht/todo-app
+    const query = test1req;
+
+    const expected = test1res;
+
+		const expectedString = JSON.stringify(expected);
+
+		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+			console.log(response);
+			expect(response).equal(expectedString);
+		});
+  });
+
+
 });

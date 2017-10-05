@@ -29,13 +29,15 @@ export function stop(app: any, done: any) {
     done();
 }
 
-export function graphqlquery(app: any, query: any) {
-    let options = {
-        baseUrl : `http://localhost:${app.address().port}`,
-        uri : '/graphql',
-        qs : {graphqlQuery : query},
-        resolveWithFullResponse: true,
-        json: true
-    }
-    return request(options);
+export function graphqlQuery(app: any, query: any) {
+    // let options = {
+		// 		url: `http://localhost:${app.address().port}/graphql?query=${query}`,
+		// 		// baseUrl : `http://localhost:${app.address().port}`,
+    //     // uri : '/graphql',
+    //     // qs : {graphqlQuery : query},
+    //     resolveWithFullResponse: true,
+    //     json: true
+    // }
+    // return request(options);
+		return request(`http://localhost:${app.address().port}/graphql?query=${query}`);
 }
