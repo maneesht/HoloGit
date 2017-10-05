@@ -20,7 +20,7 @@ export class Server {
         passport.use(new Strategy({
             clientID: GITHUB_CLIENT_ID,
             clientSecret: GITHUB_CLIENT_SECRET,
-            callbackURL: "http://localhost:3000/auth/github/callback"
+            callbackURL: "http://holo-git.herokuapp.com/auth/github/callback"
             },
             (accessToken, refreshToken, profile, done) => { done(null, Object.assign({}, profile, {
                 accessToken: accessToken
@@ -53,6 +53,10 @@ let CommitQL = new GraphQLObjectType({
 let BranchQL = new GraphQLObjectType({
     name: "Branch",
     fields: {
+        id: {
+            type: GraphQLString,
+            resolve: (_) => _.branchId
+        },
         commits: {
             type: new GraphQLList(CommitQL),
             args: {
