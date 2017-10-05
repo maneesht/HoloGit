@@ -58,7 +58,6 @@ export class GitPoller {
         });
         options.qs.access_token = accessToken;
         let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
-        console.log(options);
         return request.get(options).then(body => {
             body.forEach((commit: JSON) => {
                 let pSha: string = '';

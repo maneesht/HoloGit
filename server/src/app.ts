@@ -83,10 +83,11 @@ const queryType = new GraphQLObjectType({
                 branchName: { type: GraphQLString },
             },
             resolve: (_, { repo, username, branchName }, context) => {
+                var ip = context.header('x-forwarded-for');
                 if (branchName) {
-                    return GitPoller.getBranch(username, repo, branchName, context.ip);
+                    return GitPoller.getBranch(username, repo, branchName, ip);
                 }
-                return GitPoller.getRepo(username, repo, context.ip);
+                return GitPoller.getRepo(username, repo, ip);
             }
         },
     }
@@ -112,9 +113,15 @@ app.use('/graphql', graphqlHTTP({
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
 app.get('/login', passport.authenticate('github', { scope: ['repo']}));
 app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: '/login'}), (req, res) => {
-    GitPoller.addAccessToken(req.ip, req.user.accessToken);
-    res.send(req.user);
+    var ip = req.header('x-forwarded-for');
+    GitPoller.addAccessToken(ip, req.user.accessToken);
+    let accessToken = req.user.accessToken;
+    res.send({user: req.user, ip: req.connection.remoteAddress});
 });
 app.use("/", routes);
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+});
 
 export { CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList };
