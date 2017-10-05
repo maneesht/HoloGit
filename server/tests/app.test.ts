@@ -3,9 +3,13 @@ import sinon from 'sinon';
 
 import {CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList} from '../src/app';
 import { GitPoller } from '../src/gitpoller';
+import * as request from 'request-promise-native'
+//import {start, stop, graphqlQuery} from './testServer';
+import { test1req, test1res, test1res2, test2req, test2res, test2res2, test3req, test3res, test4req, test4res} from './testReqRes'
 
 const commitType = CommitQL;
 const branchType = BranchQL;
+
 
 describe('Commit', () => {
 	//test schema fields
@@ -44,4 +48,58 @@ describe('Query', () => {
     expect(queryType.getFields()).to.have.property('branches');
     expect(queryType.getFields().branches.type).to.be.an.instanceOf(GraphQLList);
   });
+});
+
+describe('Graphql integration', () => {
+  let app: any;
+
+	it('Should return two branches of a simple repo', () => {
+		//github.com/maneesht/todo-app
+    const query = test1req;
+
+		const expectedString = JSON.stringify(test1res);
+		const expectedString2 = JSON.stringify(test1res2);
+
+		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
+			expect([expectedString, expectedString2]).to.include(response);
+		});
+  });
+
+	it('Should return two branches and their commits\' shas of a simple repo', () => {
+		//github.com/maneesht/todo-app
+    const query = test2req;
+
+		const expectedString = JSON.stringify(test2res);
+		const expectedString2 = JSON.stringify(test2res2);
+
+		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
+			expect([expectedString, expectedString2]).to.include(response);
+		});
+  });
+
+	it('Should return all the information of a repo', () => {
+		//github.com/maneesht/todo-app
+    const query = test3req;
+
+		const expectedString = JSON.stringify(test3res);
+
+		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+			expect(response).equal(expectedString);
+		});
+  });
+
+	it('Should return all the information of a specific branch of a repo', () => {
+		//github.com/maneesht/todo-app
+    const query = test4req;
+
+		const expectedString = JSON.stringify(test4res);
+
+		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+			expect(response).equal(expectedString);
+		});
+  });
+
+
 });
