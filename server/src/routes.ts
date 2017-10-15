@@ -18,6 +18,8 @@ routes.get('/api/remote/repositories/', (req: express.Request, res: express.Resp
 
 //Get all the public repositories of the specified user
 routes.get('/api/remote/users/:username/repositories/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    GitPoller.getReposByUser(req.params.username).then(data => res.send(data)).catch(data => res.status(400).send(data));
+    let auth = req.session.authorization;
+    console.log("AUTH: ", auth);
+    GitPoller.getReposByUser(req.params.username, req.session.authorization).then(data => res.send(data)).catch(data => res.status(400).send(data));
 });
 

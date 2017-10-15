@@ -133,12 +133,15 @@ export class GitPoller {
         });
     }
 
-    static getReposByUser(username: string) {
+    static getReposByUser(username: string, auth: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/users/${username}/repos`
         });
+        let optionsNew = _.cloneDeep(options);
+        if(auth)
+            optionsNew.headers.Authorization = auth;
         let data: { name: string, description: string, language: string, owner: string }[] = [];
-        return request.get(options).then(response => {
+        return request.get(optionsNew).then(response => {
             let body = response.body;
             body.forEach((repo: JSON) => {
                 data.push({
@@ -197,6 +200,36 @@ export class GitPoller {
                 });
             });
             return commits;
+        });
+    }
+
+    static getPullRequests(username: string, repo:string) {
+        let options = Object.assign(GitPoller.option, {
+            url: `https://api.github.com/repos/${username}/${repo}/pulls`
+        });
+        let data: {number: number, title: string, body: string, assignee: string, user: string, state: string}[] = [];
+        return request.get(options).then(response => {
+            let body = response.body;
+            body.forEach((pullrequest: JSON) => {
+                let assigneeLogin: string = '';
+                if (pullrequest['assignee'] && pullrequest['assignee']['login'].length != 0) {
+                    assigneeLogin = body['assignee']['login'];
+                }
+                data.push({
+                    number: pullrequest['number'],
+                    title: pullrequest['title'],
+                    body: pullrequest['body'],
+                    assignee: assigneeLogin,
+                    user: pullrequest['user']['login'],
+                    state: pullrequest['state']
+                });
+            });
+            return data;
+        }).catch(error => {
+            return [{
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            }];
         });
     }
 }

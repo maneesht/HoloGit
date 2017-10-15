@@ -138,7 +138,7 @@ app.get('/login', (req, res, next) => {
             </body>
         </html>
     `)
-})
+});
 app.post('/login', (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
