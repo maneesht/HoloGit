@@ -204,19 +204,12 @@ export class GitPoller {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/pulls`
         });
-        let data: {
-            number: number,
-            title: string,
-            body: string,
-            assignee: string,
-            user: string,
-            state: string
-        }[] = [];
+        let data: {number: number, title: string, body: string, assignee: string, user: string, state: string}[] = [];
         return request.get(options).then(response => {
             let body = response.body;
             body.forEach((pullrequest: JSON) => {
                 let assigneeLogin: string = '';
-                if (pullrequest['assignee']['login'].length != 0) {
+                if (pullrequest['assignee'] && pullrequest['assignee']['login'].length != 0) {
                     assigneeLogin = body['assignee']['login'];
                 }
                 data.push({
