@@ -1,6 +1,6 @@
 import * as express from 'express';
-import {GraphQLInt, GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, graphql } from 'graphql';
-import {CommitQL, BranchQL, queryType} from '../src/app'
+import { GraphQLInt, GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, graphql } from 'graphql';
+import { CommitQL, BranchQL, queryType } from '../src/app'
 import * as request from 'request-promise-native'
 import * as graphqlHTTP from 'express-graphql';
 
@@ -13,17 +13,17 @@ export function start(done: any, appPort: number) {
     const PORT = appPort || 3030;
 
     app.get('/graphql', (req, res) => {
-			const graphqlQuery = req.query.graphqlQuery;
-			if (!graphqlQuery) {
-				return res.status(500).send('you must provide a query');
-			}
+        const graphqlQuery = req.query.graphqlQuery;
+        if (!graphqlQuery) {
+            return res.status(500).send('you must provide a query');
+        }
 
-			return graphql(schema, graphqlQuery)
-				.then(response => response.data)
-				.then((data) => res.json(data))
-				.catch((err) => console.log(err));
+        return graphql(schema, graphqlQuery)
+            .then(response => response.data)
+            .then((data) => res.json(data))
+            .catch((err) => console.log(err));
 
-		});
+    });
 
     return app.listen(PORT, () => {
         // console.log(`listening on port ${PORT}`);
@@ -38,10 +38,10 @@ export function stop(app: any, done: any) {
 }
 
 export function graphqlQuery(app: any, query: any) {
-	  return request({
-				baseUrl: `http://localhost:3000`,
-				uri: `/graphql?query=${query}`,
-	      resolveWithFullResponse: true,
-	      json: true
-	  });
+    return request({
+        baseUrl: `http://localhost:3000`,
+        uri: `/graphql?query=${query}`,
+        resolveWithFullResponse: true,
+        json: true
+    });
 }

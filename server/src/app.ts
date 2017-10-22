@@ -75,13 +75,11 @@ let BranchQL = new GraphQLObjectType({
         commits: {
             type: new GraphQLList(CommitQL),
             args: {
-                sha: { type: GraphQLString }
+                sha: { type: GraphQLString },
+                author: { type: GraphQLString }
             },
-            resolve: (_, { sha }) => {
-                if (!sha) {
-                    return _.commits;
-                }
-                return _.commits.filter((commits: any) => commits.sha === sha);
+            resolve: (_, { sha, author }) => {
+                return _.commits.filter((commit: any) => sha ? commit.sha === sha : true).filter((commit:any) => author ? commit.author === author: true);
             }
         }
     }
@@ -143,9 +141,12 @@ app.get('/login', (req, res, next) => {
 app.post('/login', (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
+    console.log('username: ', username);
+    console.log('password: ', password);
     //let username = req.body.username;
     //let password = req.body.password;
     let encoded = new Buffer(`${username}:${password}`).toString('base64');
+    console.log(req.body);
     let r = request.get({
         headers: {
             'content-type': 'application/json',
