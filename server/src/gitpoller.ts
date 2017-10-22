@@ -35,6 +35,7 @@ export class GitPoller {
             options.headers.Authorization = auth;
         }
         let branches: Branch[] = [];
+        //options.qs.access_token = accessToken;
         return request.get(options).then(response => {
             let body = response.body;
             let promises:Promise<any>[] = [];
@@ -197,5 +198,33 @@ export class GitPoller {
                 errorMessage: error.error.message
             };
         });
+    }
+
+    static getCommitsByUser(username: string, repo: string, userFilter: string) {
+        let options = Object.assign(GitPoller.option, {
+            url: `https://api.github.com/repos/${username}/${repo}/commits?author=${userFilter}`
+        });
+        let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
+        return request.get(options).then(response => {
+            let body = response.body;
+            body.forEach((commit: JSON) => {
+                let pSha: string = '';
+                if (body['parents'].length != 0) {
+                    pSha = body['parents'][0]['sha'];
+                }
+                commits.push({
+                    sha: commit['sha'],
+                    author: commit['author']['login'],
+                    message: commit['commit']['message'],
+                    parentSha: pSha
+                });
+            });
+            return body;
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
+        })
     }
 }
