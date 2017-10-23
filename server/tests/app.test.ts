@@ -60,7 +60,7 @@ describe('Graphql integration', () => {
 		const expectedString = JSON.stringify(test1res);
 		const expectedString2 = JSON.stringify(test1res2);
 
-		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
+		return request(`https://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
 			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
 			expect([expectedString, expectedString2]).to.include(response);
 		});

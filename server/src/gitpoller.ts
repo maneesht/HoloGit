@@ -72,6 +72,7 @@ export class GitPoller {
             };
             return [branchInfo];
         }).catch(error => {
+            console.log("ERROR", error.error.message);
             return error;
         });
     }
@@ -99,6 +100,7 @@ export class GitPoller {
             });
             return commits;
         }).catch(error => {
+            console.log("ERROR", error.error.message);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
@@ -127,6 +129,7 @@ export class GitPoller {
             };
             return commit
         }).catch(error => {
+            console.log("ERROR", error.error.message);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
@@ -152,6 +155,7 @@ export class GitPoller {
             });
             return data;
         }).catch(error => {
+            console.log("ERROR", error.error.message);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
