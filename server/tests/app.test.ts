@@ -65,11 +65,12 @@ describe('Graphql integration', () => {
 		//github.com/maneesht/todo-app
     const query = test1req;
 
-		const expectedString = JSON.stringify(test1res);
-		const expectedString2 = JSON.stringify(test1res2);
+		const expectedString = test1res;
+		const expectedString2 = test1res2;
 
 		return graphqlQuery(app, query).then((response) => {
-			expect([test1res, test1res2]).to.have.deep.include(response.body);
+			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
+			expect([expectedString, expectedString2]).to.have.deep.include(response.body);
 		});
   });
 

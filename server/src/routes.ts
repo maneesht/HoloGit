@@ -1,5 +1,4 @@
 import * as express from 'express';
-import * as request from 'request';
 import { GitPoller } from './gitpoller';
 
 export const routes: express.Router = express.Router();
