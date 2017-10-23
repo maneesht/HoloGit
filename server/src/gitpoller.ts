@@ -33,10 +33,8 @@ export class GitPoller {
         });
         if(auth) {
             options.headers.Authorization = auth;
-            console.log("AUTH EXISTS", auth);
         }
         let branches: {branchID: string, commits: object, parentBranch: string}[] = [];
-        console.log("options", options);
         return request.get(options).then(response => {
             let body = response.body;
             let promises:Promise<any>[] = [];
@@ -52,7 +50,6 @@ export class GitPoller {
             });
             return q.all(promises).then(data => branches);
         }).catch(error => {
-            console.log("ERROR: ", error);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
@@ -72,7 +69,6 @@ export class GitPoller {
             };
             return [branchInfo];
         }).catch(error => {
-            console.log("ERROR", error.error.message);
             return error;
         });
     }
@@ -100,7 +96,6 @@ export class GitPoller {
             });
             return commits;
         }).catch(error => {
-            console.log("ERROR", error.error.message);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
@@ -129,7 +124,6 @@ export class GitPoller {
             };
             return commit
         }).catch(error => {
-            console.log("ERROR", error.error.message);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
@@ -155,7 +149,6 @@ export class GitPoller {
             });
             return data;
         }).catch(error => {
-            console.log("ERROR", error.error.message);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
