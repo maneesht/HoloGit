@@ -14,28 +14,29 @@ interface Branch  {
     id: string,
     commits: Commits;        
 }
-interface AccessTokenMap {
-    [auth:string]: string;
+
+interface HeaderOptional {
+    'User-agent': string;
+    Authorization: string;
 }
 export class GitPoller {
-    static accessTokens:AccessTokenMap = {};
     static option = {
-        headers: {'User-agent': 'hologit/0.1', Authorization: ''},
+        headers: <HeaderOptional> {'User-agent': 'hologit/0.1'},
         json: true,
-        qs: {
-            client_id: GITHUB_CLIENT_ID,
-            client_secret: GITHUB_CLIENT_SECRET,
-            access_token: ''
-        },
+        
         resolveWithFullResponse: true
     };
 
-    static getRepo(username: string, repo: string, auth: string) {
+    static getRepo(username: string, repo: string, auth?: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/branches`
         });
-        options.headers.Authorization = auth;
+        if(auth) {
+            options.headers.Authorization = auth;
+            console.log("AUTH EXISTS", auth);
+        }
         let branches: {branchID: string, commits: object, parentBranch: string}[] = [];
+        console.log("options", options);
         return request.get(options).then(response => {
             let body = response.body;
             let promises:Promise<any>[] = [];
@@ -51,6 +52,7 @@ export class GitPoller {
             });
             return q.all(promises).then(data => branches);
         }).catch(error => {
+            console.log("ERROR: ", error);
             return {
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
@@ -59,7 +61,7 @@ export class GitPoller {
     }
 
     
-    static getBranch(username: string, repo: string, branch: string, auth: string) {
+    static getBranch(username: string, repo: string, branch: string, auth?: string) {
         return GitPoller.getCommits(username, repo, branch,auth).then(data => {
             if (data.hasOwnProperty('errorCode')) {
                 throw data;
@@ -78,7 +80,8 @@ export class GitPoller {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}`
         });
-        options.headers.Authorization = auth;
+        if(auth)
+            options.headers.Authorization = auth;
         let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
         return request.get(options).then(response => {
             let body = response.body;
@@ -103,11 +106,12 @@ export class GitPoller {
         });
     }
 
-    static getCommit(username: string, repo: string, sha: string, auth: string) {
+    static getCommit(username: string, repo: string, sha: string, auth?: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}`
         });
-        options.headers.Authorization = auth;
+        if(auth)
+            options.headers.Authorization = auth;
         let commit: {commitId: {branchID: string, author: string, committer: string, parentSha: string}}
         return request.get(options).then(response => {
             let body = response.body;
