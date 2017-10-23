@@ -146,7 +146,7 @@ app.post('/login', (req, res, next) => {
         url: 'https://api.github.com/repos/maneesht/hologit/branches'
     }, (err, httpResponse, body) => {
         req.session.authorization = 'Basic ' + encoded;
-        res.send(req.session);
+        res.send('Authentication successful!');
     });
 });
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
