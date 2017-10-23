@@ -4,13 +4,23 @@ import * as q from 'q';
 
 const GITHUB_CLIENT_ID = 'f10bae450fbb2df2d082';
 const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
+interface Commits {
+    sha: string,
+    parentSha: string;
+    author: string,
+    message: string
+}
+interface Branch  {
+    id: string,
+    commits: Commits;        
+}
 interface AccessTokenMap {
-    [ip:string]: string;
+    [auth:string]: string;
 }
 export class GitPoller {
     static accessTokens:AccessTokenMap = {};
     static option = {
-        headers: {'User-agent': 'hologit/0.1'},
+        headers: {'User-agent': 'hologit/0.1', Authorization: ''},
         json: true,
         qs: {
             client_id: GITHUB_CLIENT_ID,
@@ -20,23 +30,19 @@ export class GitPoller {
         resolveWithFullResponse: true
     };
 
-    static addAccessToken(ip: string, accessToken: string) {
-        this.accessTokens[ip] = accessToken;
-    }
-    static getRepo(username: string, repo: string, ip: string) {
-        let accessToken = this.accessTokens[ip];
+    static getRepo(username: string, repo: string, auth: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/branches`
         });
-        options.qs.access_token = accessToken;
-        let branches: {branchId: string, commits: object, parentBranch: string}[] = [];
+        options.headers.Authorization = auth;
+        let branches: {branchID: string, commits: object, parentBranch: string}[] = [];
         return request.get(options).then(response => {
             let body = response.body;
             let promises:Promise<any>[] = [];
             body.forEach((branch: JSON) => {
-                let promise = GitPoller.getCommits(username, repo, branch['name'], ip).then((data: object) => {
+                let promise = GitPoller.getCommits(username, repo, branch['name'], auth).then((data: object) => {
                     branches.push({
-                        branchId: branch['name'],
+                        branchID: branch['name'],
                         commits: data,
                         parentBranch: ''
                     });
@@ -52,25 +58,27 @@ export class GitPoller {
         });
     }
 
-    static getBranch(username: string, repo: string, branch: string, ip: string) {
-        let branchInfo: {branchID: {commits: object}} = {branchID: {commits: {}}};
-        return GitPoller.getCommits(username, repo, branch,ip).then(data => {
+    
+    static getBranch(username: string, repo: string, branch: string, auth: string) {
+        return GitPoller.getCommits(username, repo, branch,auth).then(data => {
             if (data.hasOwnProperty('errorCode')) {
                 throw data;
             }
-            branchInfo.branchID.commits = data;
-            return branchInfo;
+            let branchInfo = {
+                branchID: branch,
+                commits: data
+            };
+            return [branchInfo];
         }).catch(error => {
             return error;
         });
     }
 
-    static getCommits(username: string, repo: string, branch: string, ip: string) {
-        let accessToken = this.accessTokens[ip];
+    static getCommits(username: string, repo: string, branch: string, auth: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}`
         });
-        options.qs.access_token = accessToken;
+        options.headers.Authorization = auth;
         let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
         return request.get(options).then(response => {
             let body = response.body;
@@ -95,12 +103,11 @@ export class GitPoller {
         });
     }
 
-    static getCommit(username: string, repo: string, sha: string, ip: string) {
-        let accessToken = this.accessTokens[ip];
+    static getCommit(username: string, repo: string, sha: string, auth: string) {
         let options = Object.assign(GitPoller.option, {
-            url: `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}`,
-            access_token: accessToken
+            url: `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}`
         });
+        options.headers.Authorization = auth;
         let commit: {commitId: {branchID: string, author: string, committer: string, parentSha: string}}
         return request.get(options).then(response => {
             let body = response.body;
@@ -128,13 +135,13 @@ export class GitPoller {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/search/repositories?sort=stars&order=desc&q=created:>${date.toISOString().split('T')[0]}`
         });
-        let data: {name: string, description: string, language: string, owner: string}[] = [];
+        let data: {name: string, descrauthtion: string, language: string, owner: string}[] = [];
         return request.get(options).then(response => {
             let body = response.body;
             body['items'].forEach((repo: JSON) => {
                 data.push({
                     name: repo['name'],
-                    description: repo['description'],
+                    descrauthtion: repo['description'],
                     language: repo['language'],
                     owner: repo['owner']['login']
                 });
@@ -152,13 +159,13 @@ export class GitPoller {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/users/${username}/repos`
         });
-        let data: {name: string, description: string, language: string, owner: string}[] = [];
+        let data: {name: string, descrauthtion: string, language: string, owner: string}[] = [];
         return request.get(options).then(response => {
             let body = response.body;
             body.forEach((repo: JSON) => {
                 data.push({
                     name: repo['name'],
-                    description: repo['description'],
+                    descrauthtion: repo['description'],
                     language: repo['language'],
                     owner: repo['owner']['login']
                 });
