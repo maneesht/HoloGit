@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import {CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList} from '../src/app';
 import { GitPoller } from '../src/gitpoller';
 import * as request from 'request-promise-native'
-//import {start, stop, graphqlQuery} from './testServer';
+import {start, stop, graphqlQuery} from './testServer';
 import { test1req, test1res, test1res2, test2req, test2res, test2res2, test3req, test3res, test4req, test4res} from './testReqRes'
 
 const commitType = CommitQL;
@@ -53,6 +53,14 @@ describe('Query', () => {
 describe('Graphql integration', () => {
   let app: any;
 
+	before((done) => {
+		app = start(done, null);
+	})
+
+	after((done) => {
+		stop(app, done);
+	})
+
 	it('Should return two branches of a simple repo', () => {
 		//github.com/maneesht/todo-app
     const query = test1req;
@@ -60,9 +68,8 @@ describe('Graphql integration', () => {
 		const expectedString = JSON.stringify(test1res);
 		const expectedString2 = JSON.stringify(test1res2);
 
-		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
-			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
-			expect([expectedString, expectedString2]).to.include(response);
+		return graphqlQuery(app, query).then((response) => {
+			expect([test1res, test1res2]).to.have.deep.include(response.body);
 		});
   });
 
@@ -73,9 +80,8 @@ describe('Graphql integration', () => {
 		const expectedString = JSON.stringify(test2res);
 		const expectedString2 = JSON.stringify(test2res2);
 
-		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
-			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
-			expect([expectedString, expectedString2]).to.include(response);
+		return graphqlQuery(app, query).then((response) => {
+			expect([test2res, test2res2]).to.have.deep.include(response.body);
 		});
   });
 
@@ -85,8 +91,8 @@ describe('Graphql integration', () => {
 
 		const expectedString = JSON.stringify(test3res);
 
-		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
-			expect(response).equal(expectedString);
+		return graphqlQuery(app, query).then((response) => {
+			expect(response.body).to.have.deep.equals(test3res);
 		});
   });
 
@@ -96,10 +102,8 @@ describe('Graphql integration', () => {
 
 		const expectedString = JSON.stringify(test4res);
 
-		return request(`http://holo-git.herokuapp.com/graphql?query=${query}`).then((response) => {
-			expect(response).equal(expectedString);
+		return graphqlQuery(app, query).then((response) => {
+			expect(response.body).to.have.deep.equals(test4res);
 		});
   });
-
-
 });

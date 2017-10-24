@@ -12,13 +12,21 @@ export function start(done: any, appPort: number) {
     const app = express();
     const PORT = appPort || 3030;
 
-    app.get('graphql', graphqlHTTP({
-        schema: schema,
-        graphiql: true
-    }));
+    app.get('/graphql', (req, res) => {
+			const graphqlQuery = req.query.graphqlQuery;
+			if (!graphqlQuery) {
+				return res.status(500).send('you must provide a query');
+			}
+
+			return graphql(schema, graphqlQuery)
+				.then(response => response.data)
+				.then((data) => res.json(data))
+				.catch((err) => console.log(err));
+
+		});
 
     return app.listen(PORT, () => {
-        console.log(`listening on port ${PORT}`);
+        // console.log(`listening on port ${PORT}`);
         done();
     });
 
@@ -30,14 +38,10 @@ export function stop(app: any, done: any) {
 }
 
 export function graphqlQuery(app: any, query: any) {
-    // let options = {
-		// 		url: `http://localhost:${app.address().port}/graphql?query=${query}`,
-		// 		// baseUrl : `http://localhost:${app.address().port}`,
-    //     // uri : '/graphql',
-    //     // qs : {graphqlQuery : query},
-    //     resolveWithFullResponse: true,
-    //     json: true
-    // }
-    // return request(options);
-		return request(`http://localhost:${app.address().port}/graphql?query=${query}`);
+	  return request({
+				baseUrl: `http://localhost:3000`,
+				uri: `/graphql?query=${query}`,
+	      resolveWithFullResponse: true,
+	      json: true
+	  });
 }

@@ -151,7 +151,7 @@ export const test2res2 = {
   }
 }
 
-export const test3req = `query	{
+export const test3req = `{
   branches (username: "maneesht" repo: "quiz-app"){
     id
     commits {
