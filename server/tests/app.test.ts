@@ -70,7 +70,7 @@ describe('Graphql integration', () => {
 
 		return graphqlQuery(app, query).then((response) => {
 			// expect(response).equal(expectedString) || expect(response).equal(expectedString2);
-			expect([expectedString, expectedString2]).to.have.deep.include(response);
+			expect([expectedString, expectedString2]).to.have.deep.include(response.body);
 		});
   });
 
