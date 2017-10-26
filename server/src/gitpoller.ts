@@ -223,10 +223,10 @@ export class GitPoller {
             });
             return data;
         }).catch(error => {
-            return {
+            return [{
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
-            };
+            }];
         });
     }
 }

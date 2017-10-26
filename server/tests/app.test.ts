@@ -143,6 +143,83 @@ describe('GitPoller: Contributors', () => {
 	});
 });
 
+describe('GitPoller: Pull Requests', () => {
+	
+	it('should return an array', () => {
+		//github.com/torvalds/linux
+		return GitPoller.getPullRequests('torvalds', 'linux').then((data) => {
+			expect(data).to.be.an('array')
+		});
+	});
+
+	it('should have a value of number on the pull requests', () => {
+		//github.com/torvalds/linux
+		return GitPoller.getPullRequests('torvalds', 'linux').then((data: Array<object>) => {
+			data.forEach((element) => {
+				expect(element).to.have.all.keys(['number', 'title', 'body', 'assignee', 'user', 'state']);
+			});
+		});
+	});
+
+	it('should return an empty array when no pull requests exist', () => {
+		//github.com/maneesht/todo-app
+		return GitPoller.getPullRequests('maneesht', 'todo-app').then((data) => {
+			expect(data).to.be.an('array');
+			expect(data).to.be.empty;
+		});
+	});
+
+	it('should return an array of size 5', () => {
+		//github.com/tslocke/hobo
+		return GitPoller.getPullRequests('tslocke', 'hobo').then((data) => {
+			expect(data).to.be.an('array');
+			expect(data).to.have.lengthOf(5);
+		});
+	});
+
+	it('should return the correct information', () => {
+		let expected = [{
+			number: 53,
+			title: 'Update hobo/lib/hobo/extensions/active_record/associations/reflection.rb',
+			body: 'DEPRECATION WARNING: Calling set_table_name is deprecated. Please use `self.table_name = \'the_name\'` instead. (called from class:MyModel at (eval):1)\n',
+			assignee: '',
+			user: 'kredmer',
+			state: 'open'
+		}, {
+			number: 44,
+			title: '[#1007] target.new and target.build adds new empty element in collection...',
+			body: 'Hi,\nAs said in ticket 1007, this issue is not solved by using build. An empty element is still added to the collection when using a <a> tag.\n',
+			assignee: '',
+			user: 'adoyen',
+			state: 'open'
+		}, {
+			number: 31,
+			title: 'Problems with capybara sessions.',
+			body: 'Hi,\n\nI found a problem when using hobo with capybara. in dev_controller.rb. When redirecting to \"\" (home_page has this value by default) capybara \'forgets\' the session. Do you know if redirect to \"\" is really allowed?  Maybe the home_page should have a real value instead of \"\". Think this would solve the problem also.\n\n> Capybara does not remember session when redirecting to \"\". Use \"/\" instead.\n',
+			assignee: '',
+			user: 'fpellanda',
+			state: 'open'
+		}, {
+			number: 26,
+			title: 'Allow :null=>false to be default for text, string and boolean fields',
+			body: 'In my apps I set \n\n```\n:null => false\n```\n\non most text, string an bool fields. So I think it may be a good idea to allow users to set\n\n```\n:null => false\n```\n\nby default on those field types.\n',
+			assignee: '',
+			user: 'ahenobarbi',
+			state: 'open'
+		}, {
+			number: 2,
+			title: 'Pull request for label changes',
+			body: 'These were never pulled giving me a chance to try the new github pull request interface.\n',
+			assignee: '',
+			user: 'betelgeuse',
+			state: 'open'
+		}];
+		return GitPoller.getPullRequests('tslocke', 'hobo').then((data: Array<object>) => {
+			expect(data).to.deep.equal(expected);
+		})
+	})
+});
+
 describe('GitPoller: Commits by User', () => {
 	it('should return an array', () => {
 		//github.com/maneesht/todo-app
