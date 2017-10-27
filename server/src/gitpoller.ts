@@ -193,10 +193,10 @@ export class GitPoller {
             });
             return contributors
         }).catch(error => {
-            return {
+            return [{
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
-            };
+            }];
         });
     }
 
@@ -209,8 +209,8 @@ export class GitPoller {
             let body = response.body;
             body.forEach((commit: JSON) => {
                 let pSha: string = '';
-                if (body['parents'].length != 0) {
-                    pSha = body['parents'][0]['sha'];
+                if (commit['parents'].length != 0) {
+                    pSha = commit['parents'][0]['sha'];
                 }
                 commits.push({
                     sha: commit['sha'],
@@ -219,12 +219,12 @@ export class GitPoller {
                     parentSha: pSha
                 });
             });
-            return body;
+            return commits;
         }).catch(error => {
-            return {
+            return [{
                 errorCode: error.statusCode,
                 errorMessage: error.error.message
-            };
+            }];
         })
     }
 }
