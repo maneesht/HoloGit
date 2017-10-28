@@ -1,6 +1,6 @@
 import { encode } from 'punycode';
 import { isAbsolute } from 'path';
-import { GitPoller } from './gitpoller';
+import { Branch, GitPoller } from './gitpoller';
 import * as passport from 'passport';
 import * as express from 'express';
 import * as morgan from 'morgan';
@@ -14,6 +14,13 @@ const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
 import { GraphQLInt, GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, graphql } from 'graphql';
 import * as graphqlHTTP from 'express-graphql';
 import { routes } from './routes';
+interface CommitNode {
+    author: string;
+    message: string;
+    sha: string;
+    branchToParent: boolean;
+    parentSha: string;
+}
 export class Server {
     public app: express.Application;
     public port = process.env.PORT || 3000;
@@ -59,7 +66,7 @@ let BranchQL = new GraphQLObjectType({
         id: {
             type: GraphQLString,
             resolve: (_) => {
-                return _.branchID;
+                return _.id;
             }
         },
         commits: {
@@ -148,6 +155,46 @@ app.post('/login', (req, res, next) => {
         req.session.authorization = 'Basic ' + encoded;
         res.send('Authentication successful!');
     });
+});
+
+function getNodes(branches: Branch[]) {
+    let masterCommits = {};
+    let updatedBranches: Branch[] = [];
+    let masterBranch = branches.filter(branch => branch.id === 'master')[0];
+    let nonMaster = branches.filter(branch => branch.id !== 'master');
+    let masterNodes: CommitNode[] = masterBranch.commits.map(commit => ({ ...commit, branchToParent: false }));
+    masterNodes.forEach(commit => masterCommits[commit.sha] = true);
+    let updatedMaster = {
+        id: 'master',
+        commits: masterNodes
+    }
+    nonMaster.forEach(branch => {
+        let nodes: CommitNode[] = branch.commits.map(commit => ({ ...commit, branchToParent: false }));
+        let updatedNodes = [];
+        if (branch.id === 'master') {
+            nodes.forEach(commit => masterCommits[commit.sha] = true);
+        } else {
+            for (let i = 0; i < nodes.length; i++) {
+                if (masterCommits[nodes[i].parentSha]) {
+                    nodes[i].branchToParent = true;
+                    updatedNodes.push(nodes[i]);
+                    break;
+                }
+                updatedNodes.push(nodes[i]);
+            }
+            updatedBranches.push({
+                id: branch.id,
+                commits: updatedNodes
+            });
+        }
+    });
+    updatedBranches.push(updatedMaster);
+    return updatedBranches;
+}
+app.get('/graph/repository/:username/:repo', (req, res) => {
+    let username = req.params.username;
+    let repo = req.params.repo;
+    GitPoller.getRepo(username, repo, req.session.authorization).then((branches: Branch[]) => res.send(getNodes(branches)));
 });
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
 
