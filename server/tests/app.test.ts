@@ -78,8 +78,8 @@ describe('Graphql integration', () => {
 		//github.com/maneesht/todo-app
     const query = test2req;
 
-		const expectedString = JSON.stringify(test2res);
-		const expectedString2 = JSON.stringify(test2res2);
+		const expectedString = test2res;
+		const expectedString2 = test2res2;
 
 		return graphqlQuery(app, query).then((response) => {
 			expect([test2res, test2res2]).to.have.deep.include(response.body);
@@ -90,7 +90,7 @@ describe('Graphql integration', () => {
 		//github.com/maneesht/todo-app
     const query = test3req;
 
-		const expectedString = JSON.stringify(test3res);
+		const expectedString = test3res;
 
 		return graphqlQuery(app, query).then((response) => {
 			expect(response.body).to.have.deep.equals(test3res);
@@ -101,7 +101,7 @@ describe('Graphql integration', () => {
 		//github.com/maneesht/todo-app
     const query = test4req;
 
-		const expectedString = test4res
+		const expectedString = test4res;
 
 		return graphqlQuery(app, query).then((response) => {
 			expect(response.body).to.have.deep.equals(test4res);

@@ -66,7 +66,7 @@ let BranchQL = new GraphQLObjectType({
         id: {
             type: GraphQLString,
             resolve: (_) => {
-                return _.branchID;
+                return _.id;
             }
         },
         commits: {
