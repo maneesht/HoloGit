@@ -4,15 +4,15 @@ import * as q from 'q';
 
 const GITHUB_CLIENT_ID = 'f10bae450fbb2df2d082';
 const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
-interface Commits {
+export interface Commit {
     sha: string,
     parentSha: string;
     author: string,
     message: string
 }
-interface Branch  {
-    id: string,
-    commits: Commits;        
+export interface Branch  {
+    id: string;
+    commits: Commit[];
 }
 
 interface HeaderOptional {
@@ -34,16 +34,15 @@ export class GitPoller {
         if(auth) {
             options.headers.Authorization = auth;
         }
-        let branches: {branchID: string, commits: object, parentBranch: string}[] = [];
+        let branches: Branch[] = [];
         return request.get(options).then(response => {
             let body = response.body;
             let promises:Promise<any>[] = [];
             body.forEach((branch: JSON) => {
-                let promise = GitPoller.getCommits(username, repo, branch['name'], auth).then((data: object) => {
+                let promise = GitPoller.getCommits(username, repo, branch['name'], auth).then((data: Commit[]) => {
                     branches.push({
-                        branchID: branch['name'],
-                        commits: data,
-                        parentBranch: ''
+                        id: branch['name'],
+                        commits: data
                     });
                 });
                 promises.push(promise);

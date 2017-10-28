@@ -5,7 +5,7 @@ import {CommitQL, BranchQL, queryType, graphql, GraphQLString, GraphQLList} from
 import { GitPoller } from '../src/gitpoller';
 import * as request from 'request-promise-native'
 import {start, stop, graphqlQuery} from './testServer';
-import { test1req, test1res, test1res2, test2req, test2res, test2res2, test3req, test3res, test4req, test4res} from './testReqRes'
+import { test1req, test1res, test1res2, test2req, test2res, test2res2, test3req, test3res, test4req, test4res} from './testReqRes';
 
 const commitType = CommitQL;
 const branchType = BranchQL;
@@ -101,7 +101,7 @@ describe('Graphql integration', () => {
 		//github.com/maneesht/todo-app
     const query = test4req;
 
-		const expectedString = JSON.stringify(test4res);
+		const expectedString = test4res
 
 		return graphqlQuery(app, query).then((response) => {
 			expect(response.body).to.have.deep.equals(test4res);
