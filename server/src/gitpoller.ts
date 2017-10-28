@@ -63,7 +63,7 @@ export class GitPoller {
                 throw data;
             }
             let branchInfo = {
-                branchID: branch,
+                id: branch,
                 commits: data
             };
             return [branchInfo];
@@ -108,7 +108,7 @@ export class GitPoller {
         });
         if(auth)
             options.headers.Authorization = auth;
-        let commit: {commitId: {branchID: string, author: string, committer: string, parentSha: string}}
+        let commit: {commitId: {id: string, author: string, committer: string, parentSha: string}}
         return request.get(options).then(response => {
             let body = response.body;
             let pSha: string = '';
@@ -116,7 +116,7 @@ export class GitPoller {
                 pSha = body['parents'][0]['sha'];
             }
             commit.commitId = {
-                branchID: '',
+                id: '',
                 author: body['commit']['author']['name'],
                 committer: body['commit']['committer']['name'],
                 parentSha: pSha
