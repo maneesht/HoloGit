@@ -39,6 +39,9 @@ export class Server {
         passport.deserializeUser((user, cb) => cb(null, user));
         this.app.use(morgan('combined'));
         this.app.use(cookieParser());
+        this.app.use((req, res, next) => {
+            next();
+        })
         this.app.use('/graphql', bodyParser.urlencoded( { extended: true }));
         this.app.use('/login', bodyParser.urlencoded( { extended: true }));
         this.app.use('/graphql', bodyParser.json());
@@ -152,8 +155,12 @@ app.post('/login', (req, res, next) => {
         },
         url: 'https://api.github.com/repos/maneesht/hologit/branches'
     }, (err, httpResponse, body) => {
-        req.session.authorization = 'Basic ' + encoded;
-        res.send('Authentication successful!');
+        if(!err) {
+            req.session.authorization = 'Basic ' + encoded;
+            res.send('Authentication successful!');
+        } else {
+            res.status(400);
+        }
     });
 });
 

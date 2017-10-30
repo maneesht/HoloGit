@@ -1,6 +1,7 @@
 //import * as request from 'request';
 import * as request from 'request-promise-native';
 import * as q from 'q';
+import * as _ from 'lodash';
 
 const GITHUB_CLIENT_ID = 'f10bae450fbb2df2d082';
 const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
@@ -17,20 +18,19 @@ export interface Branch  {
 
 interface HeaderOptional {
     'User-agent': string;
-    Authorization: string;
+    Authorization?: string;
 }
 export class GitPoller {
     static option = {
         headers: <HeaderOptional> {'User-agent': 'hologit/0.1'},
         json: true,
-        
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        url: ''
     };
 
     static getRepo(username: string, repo: string, auth?: string) {
-        let options = Object.assign(GitPoller.option, {
-            url: `https://api.github.com/repos/${username}/${repo}/branches`
-        });
+        let options = _.cloneDeep(GitPoller.option);
+        options.url = `https://api.github.com/repos/${username}/${repo}/branches`;
         if(auth) {
             options.headers.Authorization = auth;
         }
@@ -73,12 +73,13 @@ export class GitPoller {
     }
 
     static getCommits(username: string, repo: string, branch: string, auth: string) {
-        let options = Object.assign(GitPoller.option, {
-            url: `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}`
-        });
-        if(auth)
+        let options = _.cloneDeep(GitPoller.option);
+        options.url = `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}`;
+        if (auth) {
             options.headers.Authorization = auth;
-        let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
+        }
+        //options.qs.access_token = accessToken;
+        let commits: Commit[] = [];
         return request.get(options).then(response => {
             let body = response.body;
             body.forEach((commit: JSON) => {
@@ -103,11 +104,11 @@ export class GitPoller {
     }
 
     static getCommit(username: string, repo: string, sha: string, auth?: string) {
-        let options = Object.assign(GitPoller.option, {
-            url: `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}`
-        });
-        if(auth)
+        let options = _.cloneDeep(GitPoller.option);
+        options.url = `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}`;
+        if (auth) {
             options.headers.Authorization = auth;
+        }
         let commit: {commitId: {id: string, author: string, committer: string, parentSha: string}}
         return request.get(options).then(response => {
             let body = response.body;
@@ -177,5 +178,52 @@ export class GitPoller {
                 errorMessage: error.error.message
             };
         });
+    }
+    
+    static getContributors(username: string, repo: string) {
+        let options = Object.assign(GitPoller.option, {
+            url: `https://api.github.com/repos/${username}/${repo}/stats/contributors`
+        });
+        let contributors: Array<string> = [];
+        return request.get(options).then(response => {
+            let body = response.body;
+            body.forEach((user: JSON) => {
+                contributors.push(user['author']['login']);
+            });
+            return contributors
+        }).catch(error => {
+            return [{
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            }];
+        });
+    }
+
+    static getCommitsByUser(username: string, repo: string, userFilter: string) {
+        let options = Object.assign(GitPoller.option, {
+            url: `https://api.github.com/repos/${username}/${repo}/commits?author=${userFilter}`
+        });
+        let commits: {sha: string, author: string, message: string, parentSha: string}[] = [];
+        return request.get(options).then(response => {
+            let body = response.body;
+            body.forEach((commit: JSON) => {
+                let pSha: string = '';
+                if (commit['parents'].length != 0) {
+                    pSha = commit['parents'][0]['sha'];
+                }
+                commits.push({
+                    sha: commit['sha'],
+                    author: commit['author']['login'],
+                    message: commit['commit']['message'],
+                    parentSha: pSha
+                });
+            });
+            return commits;
+        }).catch(error => {
+            return [{
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            }];
+        })
     }
 }
