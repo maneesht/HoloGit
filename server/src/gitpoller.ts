@@ -3,8 +3,6 @@ import * as request from 'request-promise-native';
 import * as q from 'q';
 import * as _ from 'lodash';
 
-const GITHUB_CLIENT_ID = 'f10bae450fbb2df2d082';
-const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
 export interface Commit {
     sha: string,
     parentSha: string;
