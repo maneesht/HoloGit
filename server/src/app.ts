@@ -151,6 +151,7 @@ app.post('/login', (req, res, next) => {
             'User-Agent': 'holo-git/1.0'
         }
     }).then((data) => {
+        req.session.authorization = 'Basic ' + encoded;
         res.send(data);
     }).catch(err => res.status(401).send("Error logging in!"));
 });
@@ -192,7 +193,7 @@ function getNodes(branches: Branch[]) {
 app.get('/graph/repository/:username/:repo', (req, res) => {
     let username = req.params.username;
     let repo = req.params.repo;
-    GitPoller.getRepo(username, repo, req.session.authorization).then((branches: Branch[]) => res.send(getNodes(branches)));
+    GitPoller.getRepo(username, repo, req.session.authorization).then((branches: Branch[]) => res.send(getNodes(branches))).catch(err => res.status(400).send("Error Could not get graph info!"));
 });
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
 
