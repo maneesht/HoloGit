@@ -8,6 +8,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as expressSession from 'express-session';
 import * as request from 'request';
+import * as requestPromise from 'request-promise-native';
 import {Strategy} from 'passport-github2';
 const GITHUB_CLIENT_ID = 'f10bae450fbb2df2d082';
 const GITHUB_CLIENT_SECRET = 'b63e9226988bf692208873846b396a6bddf70698';
@@ -141,28 +142,17 @@ app.get('/login', (req, res, next) => {
 app.post('/login', (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
-    console.log('username: ', username);
-    console.log('password: ', password);
-    //let username = req.body.username;
-    //let password = req.body.password;
     let encoded = new Buffer(`${username}:${password}`).toString('base64');
-    console.log(req.body);
-    let r = request.get({
+    let response = requestPromise.get('https://api.github.com/user', {
         headers: {
             'content-type': 'application/json',
             'Accept': 'application/json',
             'Authorization': 'Basic ' + encoded,
             'User-Agent': 'holo-git/1.0'
-        },
-        url: 'https://api.github.com/repos/maneesht/hologit/branches'
-    }, (err, httpResponse, body) => {
-        if(!err) {
-            req.session.authorization = 'Basic ' + encoded;
-            res.send('Authentication successful!');
-        } else {
-            res.status(400);
         }
-    });
+    }).then((data) => {
+        res.send(data);
+    }).catch(err => res.status(401).send("Error logging in!"));
 });
 
 function getNodes(branches: Branch[]) {
