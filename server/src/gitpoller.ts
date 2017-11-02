@@ -166,6 +166,17 @@ export class GitPoller {
         });
     }
 
+    static getRateLimit(auth:string) {
+        let options = Object.assign(GitPoller.option, {
+            url: 'https://api.github.com/rate_limit'
+        });
+        let newOptions = _.cloneDeep(options);
+        if(auth) {
+            newOptions.headers.Authorization = auth;
+        }
+        return request.get(newOptions).then(response => response.body);
+    }
+
     static getCommitsByUser(username: string, repo: string, userFilter: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/commits?author=${userFilter}`

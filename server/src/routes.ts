@@ -7,13 +7,17 @@ routes.get('/', (req: express.Request , res: express.Response, next: express.Nex
 });
 // insert other APIs here
 
+routes.get('/api/rate-limit', (req, res, next) => {
+    GitPoller.getRateLimit(req.session.authorization).then(data => res.send(data)).catch(data => res.status(400).send("Error, could not retrieve rate limit"));
+})
+
 //Gets popular public github repositories in the last week
 routes.get('/api/remote/repositories/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    GitPoller.getPopularRepos().then(data => res.send(data)).catch(data => res.send(data));
+    GitPoller.getPopularRepos().then(data => res.send(data)).catch(data => res.status(400).send(data));
 });
 
 //Get all the public repositories of the specified user
 routes.get('/api/remote/users/:username/repositories/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    GitPoller.getReposByUser(req.params.username).then(data => res.send(data)).catch(data => res.send(data));
+    GitPoller.getReposByUser(req.params.username).then(data => res.send(data)).catch(data => res.status(400).send(data));
 });
 
