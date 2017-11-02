@@ -203,12 +203,16 @@ export class GitPoller {
         });
     }
 
-    static getPullRequests(username: string, repo:string) {
+    static getPullRequests(username: string, repo:string, auth: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/pulls`
         });
+        let newOptions = _.cloneDeep(options);
+        if(auth) {
+            newOptions.headers.Authorization = auth;
+        }
         let data: {number: number, title: string, body: string, assignee: string, user: string, state: string}[] = [];
-        return request.get(options).then(response => {
+        return request.get(newOptions).then(response => {
             let body = response.body;
             body.forEach((pullrequest: JSON) => {
                 let assigneeLogin: string = '';

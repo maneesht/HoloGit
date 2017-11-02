@@ -23,3 +23,8 @@ routes.get('/api/remote/users/:username/repositories/', (req: express.Request, r
     GitPoller.getReposByUser(req.params.username, req.session.authorization).then(data => res.send(data)).catch(data => res.status(400).send(data));
 });
 
+routes.get('/api/remote/users/:username/:repository/pull-requests', (req, res, next) => {
+    let auth = req.session.authorization;
+    GitPoller.getPullRequests(req.params.username, req.params.repository, req.session.authorization).then(data => res.send({requests: data})).catch(data => res.status(400).send(data));
+})
+
