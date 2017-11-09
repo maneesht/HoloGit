@@ -252,4 +252,28 @@ export class GitPoller {
             }];
         });
     }
+    
+    static getSearchResults(query: string) {
+        let options = Object.assign(GitPoller.option, {
+            url: `https://api.github.com/search/repositories?q=${query}`
+        });
+        let data: {name: string, description: string, language: string, owner: string}[] = [];
+        return request.get(options).then(response => {
+            let body = response.body;
+            body['items'].forEach((repo: JSON) => {
+                data.push({
+                    name: repo['name'],
+                    description: repo['description'],
+                    language: repo['language'],
+                    owner: repo['owner']['login']
+                });
+            });
+            return data;
+        }).catch(error => {
+            return {
+                errorCode: error.statusCode,
+                errorMessage: error.error.message
+            };
+        });
+    }
 }

@@ -33,3 +33,6 @@ routes.get('/api/remote/users/:username/:repository/pull-requests', (req, res, n
     GitPoller.getPullRequests(req.params.username, req.params.repository, req.session.authorization).then(data => res.send({requests: data})).catch(data => res.status(400).send(data));
 })
 
+routes.get('/api/remote/search/:query', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    GitPoller.getSearchResults(req.params.query).then(data => res.send(data)).catch(data => res.send(data));
+})
