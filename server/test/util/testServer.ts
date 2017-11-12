@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { GraphQLInt, GraphQLSchema, GraphQLObjectType, GraphQLList, GraphQLString, graphql } from 'graphql';
-import { CommitQL, BranchQL, queryType } from '../src/app'
-import * as request from 'request-promise-native'
+import { CommitQL, BranchQL, queryType } from '../../src/app';
+import * as request from 'request-promise-native';
 import * as graphqlHTTP from 'express-graphql';
 
 const schema = new GraphQLSchema({

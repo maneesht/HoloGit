@@ -133,9 +133,9 @@ export class GitPoller {
         });
     }
 
-    static getReposByUser(username: string, auth: string) {
+    static getReposByUser(username: string, auth?: string) {
         let options = Object.assign(GitPoller.option, {
-            url: `https://api.github.com/users/${username}/repos`
+            url: `https://api.github.com/user/repos`
         });
         let optionsNew = _.cloneDeep(options);
         if(auth)
