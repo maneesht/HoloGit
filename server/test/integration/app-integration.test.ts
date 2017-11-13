@@ -185,7 +185,6 @@ describe('GitPoller: Get Repos', () => {
         let encoded = new Buffer(`${username}:${password}`).toString('base64');
         let authentication = `Basic ${encoded}`;
         return GitPoller.getReposByUser('maneesht', authentication).then(data => {
-            console.log(data.find(repo => repo.name === "HoloGit"));
             expect(data.find(repo => repo.name === "HoloGit")).to.deep.equal({ name: "HoloGit", description: "CS 307 Project", language: "TypeScript", owner: "maneesht" });
         })
     });
