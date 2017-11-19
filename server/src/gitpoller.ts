@@ -155,17 +155,20 @@ export class GitPoller {
         });
     }
 
-    static getContributors(username: string, repo: string) {
+    static getContributors(username: string, repo: string, auth: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/stats/contributors`
         });
+        let optionsNew = _.cloneDeep(options);
+        if(auth)
+            optionsNew.headers.Authorization = auth;
         let contributors: Array<string> = [];
-        return request.get(options).then(response => {
+        return request.get(optionsNew).then(response => {
             let body = response.body;
             body.forEach((user: JSON) => {
                 contributors.push(user['author']['login']);
             });
-            return contributors
+            return contributors;
         });
     }
 

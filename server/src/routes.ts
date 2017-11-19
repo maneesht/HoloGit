@@ -16,12 +16,17 @@ routes.get('/api/remote/repositories/', (req: express.Request, res: express.Resp
     GitPoller.getPopularRepos().then(data => res.send(data)).catch(data => res.status(400).send(data));
 });
 
-//Get all the public repositories of the specified user
+//Get all the repositories of the specified user
+//TODO: Change to /api/my-repos
 routes.get('/api/remote/users/:username/repositories/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let auth = req.session.authorization;
-    console.log("AUTH: ", auth);
     GitPoller.getReposByUser(req.params.username, req.session.authorization).then(data => res.send(data)).catch(data => res.status(400).send(data));
 });
+
+routes.get('/api/remote/users/:username/:repository/contributors', (req, res) => {
+    let auth = req.session.authorization;
+    GitPoller.getContributors(req.params.username, req.params.repository, auth).then(data => res.send({contributors: data})).catch(err => res.status(401).send(err));
+})
 
 routes.get('/api/remote/users/:username/:repository/pull-requests', (req, res, next) => {
     let auth = req.session.authorization;
