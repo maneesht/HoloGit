@@ -85,9 +85,25 @@ let BranchQL = new GraphQLObjectType({
         }
     }
 })
+
 const queryType = new GraphQLObjectType({
     name: 'Query',
     fields: {
+        contributors: {
+            type: new GraphQLList(GraphQLString),
+            args: {
+                username: {
+                    type: GraphQLString
+                },
+                repo: {
+                    type: GraphQLString
+                }
+            },
+            resolve: (_, {username, repo}, context) => {
+                var auth = context.session.authorization;
+                return GitPoller.getAuthors(username, repo, auth);
+            }
+        },
         branches: {
             type: new GraphQLList(BranchQL),
             args: {

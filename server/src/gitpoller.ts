@@ -154,6 +154,19 @@ export class GitPoller {
             return data;
         });
     }
+    static getAuthors(username: string, repo: string, auth: string) {
+        let options = Object.assign(GitPoller.option, {
+            url: `https://api.github.com/repos/${username}/${repo}/stats/contributors`
+        });
+        let optionsNew = _.cloneDeep(options);
+        if(auth)
+            optionsNew.headers.Authorization = auth;
+        return GitPoller.getRepo(username, repo, auth).then((branches:Branch[]) => {
+            let arr:string[][] = [];
+            branches.forEach(branch => arr.push(branch.commits.map(commit => commit.author)));
+            return [].concat.apply([], arr).filter((value: string, index: number, self: string) => self.indexOf(value) === index);
+        });
+    }
 
     static getContributors(username: string, repo: string, auth: string) {
         let options = Object.assign(GitPoller.option, {
