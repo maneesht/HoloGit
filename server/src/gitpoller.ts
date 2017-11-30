@@ -168,7 +168,7 @@ export class GitPoller {
         });
     }
 
-    static getContributors(username: string, repo: string, auth: string) {
+    static getContributors(username: string, repo: string, auth?: string) {
         let options = Object.assign(GitPoller.option, {
             url: `https://api.github.com/repos/${username}/${repo}/stats/contributors`
         });
