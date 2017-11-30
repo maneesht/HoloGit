@@ -34,5 +34,5 @@ routes.get('/api/remote/users/:username/:repository/pull-requests', (req, res, n
 })
 
 routes.get('/api/remote/search/:query', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    GitPoller.getSearchResults(req.params.query).then(data => res.send(data)).catch(data => res.send(data));
+    GitPoller.getSearchResults(req.params.query, req.session.authorization).then(data => res.send(data)).catch(data => res.send(data));
 })
