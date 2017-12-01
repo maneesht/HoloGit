@@ -262,7 +262,7 @@ export class GitPoller {
             newOptions.headers.Authorization = auth;
         }
         let data: {name: string, description: string, language: string, owner: string}[] = [];
-        return request.get(options).then(response => {
+        return request.get(newOptions).then(response => {
             let body = response.body;
             body['items'].forEach((repo: JSON) => {
                 data.push({

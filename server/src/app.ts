@@ -176,6 +176,7 @@ function getNodes(branches: Branch[]) {
     let masterCommits = {};
     let updatedBranches: Branch[] = [];
     let masterBranch = branches.filter(branch => branch.id === 'master')[0];
+    console.log(branches);
     let nonMaster = branches.filter(branch => branch.id !== 'master');
     let masterNodes: CommitNode[] = masterBranch.commits.map(commit => ({ ...commit, branchToParent: false }));
     masterNodes.forEach(commit => masterCommits[commit.sha] = true);
@@ -209,7 +210,7 @@ function getNodes(branches: Branch[]) {
 app.get('/graph/repository/:username/:repo', (req, res) => {
     let username = req.params.username;
     let repo = req.params.repo;
-    GitPoller.getRepo(username, repo, req.session.authorization).then((branches: Branch[]) => res.send(getNodes(branches))).catch(err => res.status(400).send("Error Could not get graph info!"));
+    GitPoller.getRepo(username, repo, req.session.authorization).then((branches: Branch[]) => res.send(getNodes(branches))).catch(err => console.log(err) && res.status(400).send("Error Could not get graph info!"));
 });
 app.listen(server.port, () => console.log(`listening on port ${server.port}`));
 
