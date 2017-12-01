@@ -26,6 +26,7 @@ export class GitPoller {
     };
 
     static getRepo(username: string, repo: string, auth?: string) {
+        console.log("GET REPO");
         let options = _.cloneDeep(GitPoller.option);
         options.url = `https://api.github.com/repos/${username}/${repo}/branches`;
         if (auth) {
@@ -66,7 +67,7 @@ export class GitPoller {
 
     static getCommits(username: string, repo: string, branch: string, auth: string) {
         let options = _.cloneDeep(GitPoller.option);
-        options.url = `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}`;
+        options.url = `https://api.github.com/repos/${username}/${repo}/commits?sha=${branch}&per_page=100`;
         if (auth) {
             options.headers.Authorization = auth;
         }
@@ -76,6 +77,7 @@ export class GitPoller {
             let body = response.body;
             body.forEach((commit: JSON) => {
                 let pSha: string = '';
+                console.log("SHA: " + commit['sha']);
                 if (commit['parents'].length != 0) {
                     pSha = commit['parents'][0]['sha'];
                 }
@@ -92,7 +94,7 @@ export class GitPoller {
 
     static getCommit(username: string, repo: string, sha: string, auth?: string) {
         let options = _.cloneDeep(GitPoller.option);
-        options.url = `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}`;
+        options.url = `https://api.github.com/repo/${username}/${repo}/commits?sha=${sha}&per_page=100`;
         if (auth) {
             options.headers.Authorization = auth;
         }

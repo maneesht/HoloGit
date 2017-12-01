@@ -176,7 +176,6 @@ function getNodes(branches: Branch[]) {
     let masterCommits = {};
     let updatedBranches: Branch[] = [];
     let masterBranch = branches.filter(branch => branch.id === 'master')[0];
-    console.log(branches);
     let nonMaster = branches.filter(branch => branch.id !== 'master');
     let masterNodes: CommitNode[] = masterBranch.commits.map(commit => ({ ...commit, branchToParent: false }));
     masterNodes.forEach(commit => masterCommits[commit.sha] = true);
